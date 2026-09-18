@@ -1,5 +1,5 @@
-class PacMan {
-  constructor(x, y, width, height, speed, direction) {
+class Ghost {
+  constructor(x, y, width, height, speed, direction, color) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -8,6 +8,7 @@ class PacMan {
     this.framecount = 7;
     this.direction = direction;
     this.nextDirection = this.direction;
+    this.color = color;
   }
 
   moveProcess() {
@@ -29,7 +30,7 @@ class PacMan {
   draw() {
     // gameContext.save();
 
-    createRect(this.x, this.y, gameCubeSize, gameCubeSize, "red");
+    createRect(this.x, this.y, gameCubeSize, gameCubeSize, this.color);
 
     // gameContext.translate(this.x );
     // gameContext.restore();

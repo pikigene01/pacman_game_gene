@@ -10,7 +10,9 @@ let gameCanvas = document.getElementById("game-canvas"),
   DIRECTION_RIGHT = 2,
   DIRECTION_BOTTOM = 1,
   fps = 30,
-  pacman;
+  pacman,
+  scoreCount = 0,
+  score = 0;
 
 let gameInterval = setInterval(gameLoop, 1000 / fps);
 
@@ -44,6 +46,17 @@ let map = [
   [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
+
+let ghostsColors = ["red", "orange", "grey", "pink"];
+let ghosts = [];
+
+for (var i = 0; i < map.length; i++) {
+  for (var j = 0; j < map[0].length; j++) {
+    if (map[i][j] == 2) {
+      scoreCount++;
+    }
+  }
+}
 
 const draw = () => {
   for (var i = 0; i < map.length; i++) {
@@ -101,8 +114,22 @@ const draw = () => {
     }
   }
 
+  drawScore();
   drawFoods();
   pacman.draw();
+  drawGhosts()
+};
+
+const drawGhosts = () => {
+  ghosts.forEach((ghost) => {
+    ghost.draw();
+  });
+};
+
+const drawScore = () => {
+  gameContext.font = "20px Emulogic";
+  gameContext.fillStyle = "white";
+  gameContext.fillText("Score: " + score, 0, gameCubeSize * (map.length + 1));
 };
 
 let drawFoods = () => {
@@ -124,12 +151,20 @@ let drawFoods = () => {
 function gameLoop() {
   update();
   draw();
+  checkWonGame();
 }
 
 update = () => {
   createRect(0, 0, gameCanvas.width, gameCanvas.height, "black");
   pacman.moveProcess();
   pacman.eat();
+};
+
+const checkWonGame = () => {
+  if (score >= scoreCount) {
+    drawWonGame();
+    createPacMan();
+  }
 };
 
 let createPacMan = () => {
@@ -142,8 +177,35 @@ let createPacMan = () => {
     DIRECTION_RIGHT,
   );
 };
+let createGhosts = () => {
+  for (var i = 0; i < ghostsColors.length; i++) {
+    
+    let ghost = new Ghost(
+      9 * gameCubeSize + (i % 2 ? 0 : 1) * gameCubeSize,
+      10 * gameCubeSize + (i % 2 ? 0 : 1) * gameCubeSize,
+      gameCubeSize,
+      gameCubeSize,
+      pacman.speed / 2,
+      DIRECTION_UP,
+      ghostsColors[i],
+    );
+
+    ghosts.push(ghost);
+  }
+};
+
+const drawWonGame = () => {
+  gameContext.font = "20px Emulogic";
+  gameContext.fillStyle = "white";
+  gameContext.fillText(
+    "You Won!!",
+    gameCubeSize * 5,
+    gameCubeSize * (map.length + 1),
+  );
+};
 
 createPacMan();
+createGhosts();
 gameLoop();
 
 window.addEventListener("keydown", (event) => {
@@ -157,7 +219,7 @@ window.addEventListener("keydown", (event) => {
       //up
       pacman.nextDirection = DIRECTION_UP;
     } else if (k == 39 || k == 68) {
-      //right 
+      //right
       pacman.nextDirection = DIRECTION_RIGHT;
     } else if (k == 40 || k == 83) {
       //bottom
