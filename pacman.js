@@ -12,10 +12,10 @@ class PacMan {
 
   moveProcess() {
     this.changeDirectionIfPossible();
-    this.moveForwards();
     let tempDirection = this.direction;
     this.direction = this.nextDirection;
-
+    
+    this.moveForwards();
     if (this.checkCollisions()) {
       this.moveBackwards();
       this.direction = tempDirection;
@@ -31,6 +31,7 @@ class PacMan {
 
     createRect(this.x, this.y, gameCubeSize, gameCubeSize, "red");
 
+    // gameContext.drawImage('ffd', )
     // gameContext.translate(this.x );
     // gameContext.restore();
   }
@@ -60,8 +61,6 @@ class PacMan {
 
   changeDirectionIfPossible() {
     if (this.direction == this.nextDirection) return;
-
-    console.log(this.nextDirection)
 
     this.direction = this.nextDirection;
   }

@@ -1,5 +1,5 @@
 class Ghost {
-  constructor(x, y, width, height, speed, direction, color) {
+  constructor(x, y, width, height, speed, direction, color, range) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -9,19 +9,65 @@ class Ghost {
     this.direction = direction;
     this.nextDirection = this.direction;
     this.color = color;
+    this.range = this.range;
+    this.target = randomTargets[0];
+    this.randomTargetIndex = parseInt(Math.random() * ghosts.length);
+    setInterval(() => {
+      this.changeRandomIndex();
+    }, 10000);
+  }
+
+  changeRandomIndex() {
+    this.randomTargetIndex += 1;
+
+    this.randomTargetIndex = this.randomTargetIndex % 4;
+  }
+  isInRangeWithPacman() {
+    let xDistance = Math.abs(pacman.getMapX() - this.getMapX());
+    let yDistance = Math.abs(pacman.getMapY() - this.getMapY());
+
+    if (
+      Math.sqrt(xDistance * xDistance + yDistance * yDistance) <= this.range
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  changeDirectionIfPossible() {
+    if (this.direction == this.nextDirection) return;
+
+    this.direction = this.nextDirection;
   }
 
   moveProcess() {
-    this.changeDirectionIfPossible();
-    this.moveForwards();
+    if (this.isInRangeWithPacman()) {
+      alert(true);
+      this.target = pacman;
+    } else {
+      this.target = randomTargets[this.randomTargetIndex];
+    }
+
     let tempDirection = this.direction;
-    this.direction = this.nextDirection;
+
+    this.moveForwards();
+    this.direction = this.calculateNewDirection(
+      map,
+      parseInt(this.target.x * gameCubeSize),
+      parseInt(this.target.y * gameCubeSize),
+    );
+
+    if (typeof this.direction == "undefined") {
+      this.direction = tempDirection;
+      return;
+    }
 
     if (this.checkCollisions()) {
       this.moveBackwards();
       this.direction = tempDirection;
-    }else{
-        // this.moveBackwards()
+    } else {
+      // this.moveBackwards()
     }
 
     this.draw();
@@ -36,12 +82,83 @@ class Ghost {
     // gameContext.restore();
   }
 
+  calculateNewDirection(map, destX, destY) {
+    let mp = [];
+    for (var i = 0; i < map.length; i++) {
+      mp[i] = map[i].slice();
+    }
+
+    let queue = [{ x: this.getMapX(), y: this.getMapY(), moves: [] }];
+    while (queue.length > 0) {
+      let poped = queue.shift();
+      if (poped.x == destX && poped.y == destY) {
+        return poped.moves[0];
+      } else {
+        mp[poped.y][poped.x] = 1;
+
+        let neighbourLists = this.addNeighbours(mp, poped);
+
+        for (var i = 0; i < neighbourLists.length; i++) {
+          queue.push(neighbourLists[i]);
+        }
+      }
+    }
+    return DIRECTION_UP; //default move
+  }
+
+  addNeighbours(mp, poped) {
+    let queue = [];
+    let numberRows = mp.length;
+    let numberColumns = mp[0].length;
+
+    if (
+      poped.x - 1 >= 0 &&
+      poped.x - 1 < numberRows &&
+      mp[poped.y][poped.x - 1] != 1
+    ) {
+      let tempMoves = poped.moves.slice();
+      tempMoves.push(DIRECTION_LEFT);
+      queue.push({ x: poped.x - 1, y: poped.y, moves: tempMoves });
+    }
+
+    if (
+      poped.x + 1 >= 0 &&
+      poped.x + 1 < numberRows &&
+      mp[poped.y][poped.x + 1] != 1
+    ) {
+      let tempMoves = poped.moves.slice();
+      tempMoves.push(DIRECTION_RIGHT);
+      queue.push({ x: poped.x + 1, y: poped.y, moves: tempMoves });
+    }
+
+    if (
+      poped.y - 1 >= 0 &&
+      poped.y - 1 < numberRows &&
+      mp[poped.y - 1][poped.x] != 1
+    ) {
+      let tempMoves = poped.moves.slice();
+      tempMoves.push(DIRECTION_UP);
+      queue.push({ x: poped.x, y: poped.y - 1, moves: tempMoves });
+    }
+
+    if (
+      poped.y + 1 >= 0 &&
+      poped.y + 1 < numberRows &&
+      mp[poped.y + 1][poped.x] != 1
+    ) {
+      let tempMoves = poped.moves.slice();
+      tempMoves.push(DIRECTION_BOTTOM);
+      queue.push({ x: poped.x, y: poped.y + 1, moves: tempMoves });
+    }
+
+    return queue;
+  }
   eat() {
     for (var i = 0; i < map.length; i++) {
       for (var j = 0; j < map[0].length; j++) {
-        if(map[i][j] == 2 && this.getMapX() == j && this.getMapY() == i){
-            map[i][j] = 3;
-            score++;
+        if (map[i][j] == 2 && this.getMapX() == j && this.getMapY() == i) {
+          map[i][j] = 3;
+          score++;
         }
       }
     }
@@ -57,14 +174,6 @@ class Ghost {
       return true;
     }
     return false;
-  }
-
-  changeDirectionIfPossible() {
-    if (this.direction == this.nextDirection) return;
-
-    console.log(this.nextDirection)
-
-    this.direction = this.nextDirection;
   }
 
   moveBackwards() {

@@ -47,6 +47,16 @@ let map = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
+//x axis columns
+//y axis rows
+
+let randomTargets = [
+  { x: 1 * gameCubeSize, y: 1 * gameCubeSize },
+  { x: 1 * gameCubeSize, y: (map.legth - 2) * gameCubeSize },
+  { x: (map[0].length - 2) * gameCubeSize, y: gameCubeSize },
+  { x: (map[0].length - 2) * gameCubeSize, y: (map.length - 2) * 2 },
+];
+
 let ghostsColors = ["red", "orange", "grey", "pink"];
 let ghosts = [];
 
@@ -117,7 +127,7 @@ const draw = () => {
   drawScore();
   drawFoods();
   pacman.draw();
-  drawGhosts()
+  drawGhosts();
 };
 
 const drawGhosts = () => {
@@ -158,6 +168,9 @@ update = () => {
   createRect(0, 0, gameCanvas.width, gameCanvas.height, "black");
   pacman.moveProcess();
   pacman.eat();
+  for(var i = 0; i < ghosts.length; i++){
+    ghosts[i].moveProcess()
+  }
 };
 
 const checkWonGame = () => {
@@ -179,7 +192,6 @@ let createPacMan = () => {
 };
 let createGhosts = () => {
   for (var i = 0; i < ghostsColors.length; i++) {
-    
     let ghost = new Ghost(
       9 * gameCubeSize + (i % 2 ? 0 : 1) * gameCubeSize,
       10 * gameCubeSize + (i % 2 ? 0 : 1) * gameCubeSize,
@@ -188,6 +200,7 @@ let createGhosts = () => {
       pacman.speed / 2,
       DIRECTION_UP,
       ghostsColors[i],
+      6 + i,
     );
 
     ghosts.push(ghost);
