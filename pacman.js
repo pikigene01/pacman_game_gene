@@ -12,18 +12,11 @@ class PacMan {
 
   moveProcess() {
     this.changeDirectionIfPossible();
-    let tempDirection = this.direction;
-    this.direction = this.nextDirection;
-    
     this.moveForwards();
     if (this.checkCollisions()) {
       this.moveBackwards();
-      this.direction = tempDirection;
-    }else{
-        // this.moveBackwards()
+      return;
     }
-
-    this.draw();
   }
 
   draw() {
@@ -39,9 +32,9 @@ class PacMan {
   eat() {
     for (var i = 0; i < map.length; i++) {
       for (var j = 0; j < map[0].length; j++) {
-        if(map[i][j] == 2 && this.getMapX() == j && this.getMapY() == i){
-            map[i][j] = 3;
-            score++;
+        if (map[i][j] == 2 && this.getMapX() == j && this.getMapY() == i) {
+          map[i][j] = 3;
+          score++;
         }
       }
     }
@@ -61,10 +54,28 @@ class PacMan {
 
   changeDirectionIfPossible() {
     if (this.direction == this.nextDirection) return;
-
+    let tempDirection = this.direction;
     this.direction = this.nextDirection;
+    this.moveForwards();
+    if (this.checkCollisions()) {
+      this.moveBackwards();
+      this.direction = tempDirection;
+    } else {
+      this.moveBackwards();
+    }
   }
 
+  checkGhostHit() {
+    for (var i = 0; i < ghosts.length; i++) {
+      if (
+        this.getMapX() == ghosts[i].getMapX() &&
+        this.getMapY() == ghosts[i].getMapY()
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
   moveBackwards() {
     switch (this.direction) {
       case DIRECTION_UP:
@@ -114,9 +125,9 @@ class PacMan {
   }
 
   getMapXRightSide() {
-    return parseInt((this.x + 0.9999 * gameCubeSize) / gameCubeSize);
+    return parseInt((this.x * 0.9999 + gameCubeSize) / gameCubeSize);
   }
   getMapYRightSide() {
-    return parseInt((this.y + 0.9999 * gameCubeSize) / gameCubeSize);
+    return parseInt((this.y * 0.9999 + gameCubeSize) / gameCubeSize);
   }
 }

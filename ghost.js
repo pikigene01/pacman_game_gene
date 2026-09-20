@@ -9,9 +9,9 @@ class Ghost {
     this.direction = direction;
     this.nextDirection = this.direction;
     this.color = color;
-    this.range = this.range;
-    this.target = randomTargets[0];
+    this.range = range;
     this.randomTargetIndex = parseInt(Math.random() * ghosts.length);
+    this.target = randomTargets[this.randomTargetIndex];
     setInterval(() => {
       this.changeRandomIndex();
     }, 10000);
@@ -35,15 +35,8 @@ class Ghost {
     return false;
   }
 
-  changeDirectionIfPossible() {
-    if (this.direction == this.nextDirection) return;
-
-    this.direction = this.nextDirection;
-  }
-
   moveProcess() {
     if (this.isInRangeWithPacman()) {
-      alert(true);
       this.target = pacman;
     } else {
       this.target = randomTargets[this.randomTargetIndex];
@@ -51,26 +44,56 @@ class Ghost {
 
     let tempDirection = this.direction;
 
+    this.changeDirectionIfPossible();
     this.moveForwards();
+
+    if (this.checkCollisions()) {
+      this.moveBackwards();
+      this.direction = tempDirection;
+    }
+
+    this.draw();
+  }
+
+  changeDirectionIfPossible() {
+    let tempDirection = this.direction;
+
     this.direction = this.calculateNewDirection(
       map,
-      parseInt(this.target.x * gameCubeSize),
-      parseInt(this.target.y * gameCubeSize),
+      parseInt(this.target.x / gameCubeSize),
+      parseInt(this.target.y / gameCubeSize),
     );
 
+    // console.log(this.calculateNewDirection(
+    //   map,
+    //   parseInt(this.target.x * gameCubeSize),
+    //   parseInt(this.target.y * gameCubeSize),
+    // ))
     if (typeof this.direction == "undefined") {
       this.direction = tempDirection;
       return;
     }
 
+    if (
+      this.getMapY() != this.getMapYRightSide() &&
+      (this.direction == DIRECTION_LEFT || this.direction == DIRECTION_RIGHT)
+    ) {
+      this.direction = DIRECTION_UP;
+    }
+    if (
+      this.getMapX() != this.getMapXRightSide() &&
+      this.direction == DIRECTION_UP
+    ) {
+      this.direction = DIRECTION_LEFT;
+    }
+    this.moveForwards();
     if (this.checkCollisions()) {
       this.moveBackwards();
       this.direction = tempDirection;
     } else {
-      // this.moveBackwards()
+      this.moveBackwards();
     }
-
-    this.draw();
+    console.log(this.direction);
   }
 
   draw() {
@@ -88,22 +111,32 @@ class Ghost {
       mp[i] = map[i].slice();
     }
 
-    let queue = [{ x: this.getMapX(), y: this.getMapY(), moves: [] }];
+    let queue = [
+      {
+        x: this.getMapX(),
+        y: this.getMapY(),
+        rightX: this.getMapXRightSide(),
+        rightY: this.getMapYRightSide(),
+        moves: [],
+      },
+    ];
     while (queue.length > 0) {
       let poped = queue.shift();
+
       if (poped.x == destX && poped.y == destY) {
         return poped.moves[0];
       } else {
         mp[poped.y][poped.x] = 1;
 
         let neighbourLists = this.addNeighbours(mp, poped);
+        // console.log(neighbourLists)
 
         for (var i = 0; i < neighbourLists.length; i++) {
           queue.push(neighbourLists[i]);
         }
       }
     }
-    return DIRECTION_UP; //default move
+    return DIRECTION_BOTTOM; //default move
   }
 
   addNeighbours(mp, poped) {
@@ -133,7 +166,7 @@ class Ghost {
 
     if (
       poped.y - 1 >= 0 &&
-      poped.y - 1 < numberRows &&
+      poped.y - 1 < numberColumns &&
       mp[poped.y - 1][poped.x] != 1
     ) {
       let tempMoves = poped.moves.slice();
@@ -143,7 +176,7 @@ class Ghost {
 
     if (
       poped.y + 1 >= 0 &&
-      poped.y + 1 < numberRows &&
+      poped.y + 1 < numberColumns &&
       mp[poped.y + 1][poped.x] != 1
     ) {
       let tempMoves = poped.moves.slice();
@@ -225,9 +258,9 @@ class Ghost {
   }
 
   getMapXRightSide() {
-    return parseInt((this.x + 0.9999 * gameCubeSize) / gameCubeSize);
+    return parseInt((this.x * 0.9999 + gameCubeSize) / gameCubeSize);
   }
   getMapYRightSide() {
-    return parseInt((this.y + 0.9999 * gameCubeSize) / gameCubeSize);
+    return parseInt((this.y * 0.9999 + gameCubeSize) / gameCubeSize);
   }
 }

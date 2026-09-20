@@ -52,10 +52,11 @@ let map = [
 
 let randomTargets = [
   { x: 1 * gameCubeSize, y: 1 * gameCubeSize },
-  { x: 1 * gameCubeSize, y: (map.legth - 2) * gameCubeSize },
+  { x: 1 * gameCubeSize, y: (map.length - 2) * gameCubeSize },
   { x: (map[0].length - 2) * gameCubeSize, y: gameCubeSize },
   { x: (map[0].length - 2) * gameCubeSize, y: (map.length - 2) * 2 },
 ];
+
 
 let ghostsColors = ["red", "orange", "grey", "pink"];
 let ghosts = [];
@@ -171,6 +172,9 @@ update = () => {
   for(var i = 0; i < ghosts.length; i++){
     ghosts[i].moveProcess()
   }
+  if(pacman.checkGhostHit()){
+   console.log('hit')
+  }
 };
 
 const checkWonGame = () => {
@@ -200,7 +204,7 @@ let createGhosts = () => {
       pacman.speed / 2,
       DIRECTION_UP,
       ghostsColors[i],
-      6 + i,
+      6 + i
     );
 
     ghosts.push(ghost);
