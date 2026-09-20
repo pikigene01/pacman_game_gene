@@ -173,7 +173,7 @@ update = () => {
     ghosts[i].moveProcess()
   }
   if(pacman.checkGhostHit()){
-   console.log('hit')
+  //  console.log('hit')
   }
 };
 

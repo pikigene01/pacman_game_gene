@@ -64,11 +64,6 @@ class Ghost {
       parseInt(this.target.y / gameCubeSize),
     );
 
-    // console.log(this.calculateNewDirection(
-    //   map,
-    //   parseInt(this.target.x * gameCubeSize),
-    //   parseInt(this.target.y * gameCubeSize),
-    // ))
     if (typeof this.direction == "undefined") {
       this.direction = tempDirection;
       return;
@@ -93,7 +88,6 @@ class Ghost {
     } else {
       this.moveBackwards();
     }
-    console.log(this.direction);
   }
 
   draw() {
@@ -101,7 +95,6 @@ class Ghost {
 
     createRect(this.x, this.y, gameCubeSize, gameCubeSize, this.color);
 
-    // gameContext.translate(this.x );
     // gameContext.restore();
   }
 
