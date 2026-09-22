@@ -54,7 +54,7 @@ let randomTargets = [
   { x: 1 * gameCubeSize, y: 1 * gameCubeSize },
   { x: 1 * gameCubeSize, y: (map.length - 2) * gameCubeSize },
   { x: (map[0].length - 2) * gameCubeSize, y: gameCubeSize },
-  { x: (map[0].length - 2) * gameCubeSize, y: (map.length - 2) * 2 },
+  { x: (map[0].length - 2) * gameCubeSize, y: (map.length - 2) * gameCubeSize },
 ];
 
 
