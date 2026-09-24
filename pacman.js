@@ -6,10 +6,18 @@ class PacMan {
     this.height = height;
     this.speed = speed;
     this.framecount = 7;
+    this.currentFrame = 1;
     this.direction = direction;
     this.nextDirection = this.direction;
+    setInterval(()=>{
+    this.changeAnimations()
+    }, 100);
   }
 
+  changeAnimations() {
+    this.currentFrame =
+      this.currentFrame == this.framecount ? 1 : this.currentFrame + 1;
+  }
   moveProcess() {
     this.changeDirectionIfPossible();
     this.moveForwards();
@@ -17,16 +25,35 @@ class PacMan {
       this.moveBackwards();
       return;
     }
+
   }
 
   draw() {
-    // gameContext.save();
+    gameContext.save();
+    gameContext.translate(this.x + gameCubeSize / 2, this.y + gameCubeSize / 2);
+    // add rotation
+    gameContext.rotate((this.direction * 90 * Math.PI) / 180);
+    gameContext.translate(
+      -this.x - gameCubeSize / 2,
+      -this.y - gameCubeSize / 2,
+    );
 
-    createRect(this.x, this.y, gameCubeSize, gameCubeSize, "red");
+    gameContext.drawImage(
+      gameMainPic,
+      (this.currentFrame - 1) * gameCubeSize,
+      0,
+      gameCubeSize,
+      gameCubeSize,
+
+      this.x,
+      this.y,
+      this.width,
+      this.height,
+    );
+    // createRect(this.x, this.y, gameCubeSize, gameCubeSize, "red");
 
     // gameContext.drawImage('ffd', )
-    // gameContext.translate(this.x );
-    // gameContext.restore();
+    gameContext.restore();
   }
 
   eat() {
