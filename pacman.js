@@ -9,8 +9,8 @@ class PacMan {
     this.currentFrame = 1;
     this.direction = direction;
     this.nextDirection = this.direction;
-    setInterval(()=>{
-    this.changeAnimations()
+    setInterval(() => {
+      this.changeAnimations();
     }, 100);
   }
 
@@ -25,7 +25,6 @@ class PacMan {
       this.moveBackwards();
       return;
     }
-
   }
 
   draw() {
