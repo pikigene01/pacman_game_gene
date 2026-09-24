@@ -1,6 +1,6 @@
 let gameCanvas = document.getElementById("game-canvas"),
   gameContext = gameCanvas.getContext("2d"),
-  gameMainPic = document.getElementById('main-pic'),
+  gameMainPic = document.getElementById("main-pic"),
   gameCubeSize = 20,
   wallColor = "#342DCA",
   wallSpaceWidth = gameCubeSize / 1.4,
@@ -57,7 +57,6 @@ let randomTargets = [
   { x: (map[0].length - 2) * gameCubeSize, y: gameCubeSize },
   { x: (map[0].length - 2) * gameCubeSize, y: (map.length - 2) * gameCubeSize },
 ];
-
 
 let ghostsColors = ["red", "orange", "grey", "pink"];
 let ghosts = [];
@@ -170,11 +169,11 @@ update = () => {
   createRect(0, 0, gameCanvas.width, gameCanvas.height, "black");
   pacman.moveProcess();
   pacman.eat();
-  for(var i = 0; i < ghosts.length; i++){
-    ghosts[i].moveProcess()
+  for (var i = 0; i < ghosts.length; i++) {
+    ghosts[i].moveProcess();
   }
-  if(pacman.checkGhostHit()){
-  //  console.log('hit')
+  if (pacman.checkGhostHit()) {
+    //  console.log('hit')
   }
 };
 
@@ -182,6 +181,8 @@ const checkWonGame = () => {
   if (score >= scoreCount) {
     drawWonGame();
     createPacMan();
+    createGhosts();
+    clearInterval(gameInterval);
   }
 };
 
@@ -205,7 +206,7 @@ let createGhosts = () => {
       pacman.speed / 2,
       DIRECTION_UP,
       ghostsColors[i],
-      6 + i
+      6 + i,
     );
 
     ghosts.push(ghost);
