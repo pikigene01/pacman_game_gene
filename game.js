@@ -13,7 +13,8 @@ let gameCanvas = document.getElementById("game-canvas"),
   fps = 30,
   pacman,
   scoreCount = 0,
-  score = 0;
+  score = 0,
+  lives = 3;
 
 let gameInterval = setInterval(gameLoop, 1000 / fps);
 
@@ -129,6 +130,7 @@ const draw = () => {
   drawFoods();
   pacman.draw();
   drawGhosts();
+  drawLives();
 };
 
 const drawGhosts = () => {
@@ -173,7 +175,13 @@ update = () => {
     ghosts[i].moveProcess();
   }
   if (pacman.checkGhostHit()) {
-    //  console.log('hit')
+    lives--;
+    createPacMan();
+    createGhosts();
+    if (lives <= 0) {
+      drawGameOver();
+      clearInterval(gameInterval);
+    }
   }
 };
 
@@ -196,7 +204,37 @@ let createPacMan = () => {
     DIRECTION_RIGHT,
   );
 };
+
+function drawGameOver() {
+  gameContext.fillStyle = "white";
+  gameContext.font = "20px Emulogic";
+  gameContext.fillText(
+    "Game Over You Lost!!",
+    100,
+    (map.length - 6) * gameCubeSize,
+  );
+}
+function drawLives() {
+  gameContext.fillStyle = "white";
+  gameContext.font = "20px Emulogic";
+  gameContext.fillText("Lives :", 210, (map.length + 1) * gameCubeSize);
+
+  for (var i = 0; i < lives; i++) {
+    gameContext.drawImage(
+      gameMainPic,
+      2 * gameCubeSize,
+      0,
+      gameCubeSize,
+      gameCubeSize,
+      280 + i * gameCubeSize,
+      (map[0].length + 2.2) * gameCubeSize,
+      gameCubeSize,
+      gameCubeSize,
+    );
+  }
+}
 let createGhosts = () => {
+  ghosts = [];
   for (var i = 0; i < ghostsColors.length; i++) {
     let ghost = new Ghost(
       9 * gameCubeSize + (i % 2 ? 0 : 1) * gameCubeSize,
