@@ -1,27 +1,6 @@
-let gameCanvas = document.getElementById("game-canvas"),
+const gameCanvas = document.getElementById("game-canvas"),
   gameContext = gameCanvas.getContext("2d"),
-  gameMainPic = document.getElementById("main-pic"),
-  gameCubeSize = 20,
-  wallColor = "#342DCA",
-  wallSpaceWidth = gameCubeSize / 1.4,
-  wallOffset = (gameCubeSize - wallSpaceWidth) / 2,
-  wallInnerColor = "black",
-  DIRECTION_UP = 3,
-  DIRECTION_LEFT = 2,
-  DIRECTION_RIGHT = 4,
-  DIRECTION_BOTTOM = 1,
-  fps = 30,
-  pacman,
-  scoreCount = 0,
-  score = 0,
-  lives = 3;
-
-let gameInterval = setInterval(gameLoop, 1000 / fps);
-
-let createRect = (x, y, width, height, color) => {
-  gameContext.fillStyle = color;
-  gameContext.fillRect(x, y, width, height);
-};
+  pacManFrames = document.getElementById("main-pic");
 
 let map = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -49,32 +28,84 @@ let map = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-//x axis columns
-//y axis rows
+let fps = 30,
+  gameCubeSize = 20,
+  wallColor = "#342DCA",
+  wallInnerWidth = gameCubeSize / 1.3,
+  wallOffset = (gameCubeSize - wallInnerWidth) / 2,
+  wallInnerColor = "black",
+  pacman,
+  score = 0,
+  ghosts = [],
+  lives = 3;
 
 let randomTargets = [
-  { x: 1 * gameCubeSize, y: 1 * gameCubeSize },
-  { x: 1 * gameCubeSize, y: (map.length - 2) * gameCubeSize },
-  { x: (map[0].length - 2) * gameCubeSize, y: gameCubeSize },
-  { x: (map[0].length - 2) * gameCubeSize, y: (map.length - 2) * gameCubeSize },
+  {
+    x: 1 * gameCubeSize,
+    y: 1 * gameCubeSize,
+  },
+  {
+    x: 1 * gameCubeSize,
+    y: (map.length - 2) * gameCubeSize,
+  },
+  {
+    x: (map[0].length - 2) * gameCubeSize,
+    y: gameCubeSize,
+  },
+  {
+    x: (map[0].length - 2) * gameCubeSize,
+    y: (map.length - 2) * gameCubeSize,
+  },
 ];
 
-let ghostsColors = ["red", "orange", "grey", "pink"];
-let ghosts = [];
+let ghostsColors = ["red", "white", "green", "purple"];
 
-for (var i = 0; i < map.length; i++) {
-  for (var j = 0; j < map[0].length; j++) {
-    if (map[i][j] == 2) {
-      scoreCount++;
+let DIRECTION_RIGHT = 4,
+  DIRECTION_UP = 3,
+  DIRECTION_LEFT = 2,
+  DIRECTION_BOTTOM = 1;
+
+function createRect(x, y, width, height, color) {
+  gameContext.fillStyle = color;
+  gameContext.fillRect(x, y, width, height);
+}
+
+let gameInterval = setInterval(gameLoop, 1000 / fps);
+
+function drawFoods() {
+  for (var i = 0; i < map.length; i++) {
+    for (var j = 0; j < map[0].length; j++) {
+      if (map[i][j] == 2) {
+        //then this is food
+        // createRect(
+        //   j * gameCubeSize + gameCubeSize / 3,
+        //   i * gameCubeSize + gameCubeSize / 3,
+        //   gameCubeSize / 3,
+        //   gameCubeSize / 3,
+        //   "yellow",
+        // );
+
+        gameContext.drawImage(
+          pacManFrames,
+          5 * gameCubeSize,
+          0,
+          gameCubeSize,
+          gameCubeSize,
+          j * gameCubeSize + gameCubeSize / 3,
+          i * gameCubeSize + gameCubeSize / 3,
+          gameCubeSize / 3,
+          gameCubeSize / 3,
+        );
+      }
     }
   }
 }
 
-const draw = () => {
+let drawWalls = () => {
   for (var i = 0; i < map.length; i++) {
     for (var j = 0; j < map[0].length; j++) {
       if (map[i][j] == 1) {
-        //this is a wall
+        //then this is wall
         createRect(
           j * gameCubeSize,
           i * gameCubeSize,
@@ -88,8 +119,8 @@ const draw = () => {
         createRect(
           j * gameCubeSize,
           i * gameCubeSize + wallOffset,
-          wallSpaceWidth + wallOffset,
-          wallSpaceWidth,
+          wallInnerWidth + wallOffset,
+          wallInnerWidth,
           wallInnerColor,
         );
       }
@@ -98,8 +129,8 @@ const draw = () => {
         createRect(
           j * gameCubeSize + wallOffset,
           i * gameCubeSize + wallOffset,
-          wallSpaceWidth + wallOffset,
-          wallSpaceWidth,
+          wallInnerWidth + wallOffset,
+          wallInnerWidth,
           wallInnerColor,
         );
       }
@@ -108,8 +139,8 @@ const draw = () => {
         createRect(
           j * gameCubeSize + wallOffset,
           i * gameCubeSize,
-          wallSpaceWidth,
-          wallSpaceWidth + wallOffset,
+          wallInnerWidth,
+          wallInnerWidth + wallOffset,
           wallInnerColor,
         );
       }
@@ -118,150 +149,109 @@ const draw = () => {
         createRect(
           j * gameCubeSize + wallOffset,
           i * gameCubeSize + wallOffset,
-          wallSpaceWidth,
-          wallSpaceWidth + wallOffset,
+          wallInnerWidth,
+          wallInnerWidth + wallOffset,
           wallInnerColor,
         );
       }
     }
   }
-
-  drawScore();
-  drawFoods();
-  pacman.draw();
-  drawGhosts();
-  drawLives();
 };
 
-const drawGhosts = () => {
-  ghosts.forEach((ghost) => {
-    ghost.draw();
-  });
-};
-
-const drawScore = () => {
-  gameContext.font = "20px Emulogic";
+function drawScore() {
   gameContext.fillStyle = "white";
-  gameContext.fillText("Score: " + score, 0, gameCubeSize * (map.length + 1));
-};
+  gameContext.font = "20px Emulogic";
+  gameContext.fillText("Score: " + score, 0, (map.length + 1) * gameCubeSize);
+}
+function drawLives() {
+  gameContext.fillStyle = "white";
+  gameContext.font = "20px Emulogic";
 
-let drawFoods = () => {
-  for (var i = 0; i < map.length; i++) {
-    for (var j = 0; j < map[0].length; j++) {
-      if (map[i][j] == 2) {
-        createRect(
-          j * gameCubeSize + gameCubeSize / 3,
-          i * gameCubeSize + gameCubeSize / 3,
-          gameCubeSize / 3,
-          gameCubeSize / 3,
-          "yellow",
-        );
-      }
-    }
+  gameContext.fillText("Lives: ", 210, (map.length + 1) * gameCubeSize);
+
+  for (var i = 0; i < lives; i++) {
+    gameContext.drawImage(
+      pacManFrames,
+      2 * gameCubeSize,
+      0,
+      gameCubeSize,
+      gameCubeSize,
+      260 + i * gameCubeSize,
+      (map.length + 0.2) * gameCubeSize,
+      gameCubeSize,
+      gameCubeSize,
+    );
   }
-};
-
-function gameLoop() {
-  update();
-  draw();
-  checkWonGame();
 }
 
-update = () => {
-  createRect(0, 0, gameCanvas.width, gameCanvas.height, "black");
-  pacman.moveProcess();
-  pacman.eat();
-  for (var i = 0; i < ghosts.length; i++) {
-    ghosts[i].moveProcess();
-  }
-  if (pacman.checkGhostHit()) {
-    lives--;
-    createPacMan();
-    createGhosts();
-    if (lives <= 0) {
-      drawGameOver();
-      clearInterval(gameInterval);
-    }
-  }
-};
-
-const checkWonGame = () => {
-  if (score >= scoreCount) {
-    drawWonGame();
-    createPacMan();
-    createGhosts();
-    clearInterval(gameInterval);
-  }
-};
-
-let createPacMan = () => {
+function createNewPacMan() {
   pacman = new PacMan(
     gameCubeSize,
     gameCubeSize,
     gameCubeSize,
     gameCubeSize,
-    gameCubeSize / 5,
     DIRECTION_RIGHT,
-  );
-};
-
-function drawGameOver() {
-  gameContext.fillStyle = "white";
-  gameContext.font = "20px Emulogic";
-  gameContext.fillText(
-    "Game Over You Lost!!",
-    100,
-    (map.length - 6) * gameCubeSize,
+    gameCubeSize / 5,
+    "green",
   );
 }
-function drawLives() {
-  gameContext.fillStyle = "white";
-  gameContext.font = "20px Emulogic";
-  gameContext.fillText("Lives :", 210, (map.length + 1) * gameCubeSize);
 
-  for (var i = 0; i < lives; i++) {
-    gameContext.drawImage(
-      gameMainPic,
-      2 * gameCubeSize,
-      0,
-      gameCubeSize,
-      gameCubeSize,
-      280 + i * gameCubeSize,
-      (map[0].length + 2.2) * gameCubeSize,
-      gameCubeSize,
-      gameCubeSize,
-    );
-  }
-}
-let createGhosts = () => {
+function createGhosts() {
   ghosts = [];
   for (var i = 0; i < ghostsColors.length; i++) {
-    let ghost = new Ghost(
-      9 * gameCubeSize + (i % 2 ? 0 : 1) * gameCubeSize,
-      10 * gameCubeSize + (i % 2 ? 0 : 1) * gameCubeSize,
-      gameCubeSize,
-      gameCubeSize,
-      pacman.speed / 2,
-      DIRECTION_UP,
-      ghostsColors[i],
-      6 + i,
+    ghosts.push(
+      new Ghost(
+        9 * gameCubeSize + (i % 2 == 0 ? 0 : 1) * gameCubeSize,
+        10 * gameCubeSize + (i % 2 == 0 ? 0 : 1) * gameCubeSize,
+        gameCubeSize,
+        gameCubeSize,
+        DIRECTION_UP,
+        pacman.speed / 2,
+        ghostsColors[i],
+        i + 6,
+      ),
     );
-
-    ghosts.push(ghost);
   }
-};
+}
 
-const drawWonGame = () => {
-  gameContext.font = "20px Emulogic";
-  gameContext.fillStyle = "white";
-  gameContext.fillText(
-    "You Won!!",
-    gameCubeSize * 5,
-    gameCubeSize * (map.length + 1),
-  );
-};
+function drawGhosts() {
+  for (var i = 0; i < ghosts.length; i++) {
+    ghosts[i].draw();
+  }
+}
+function moveGhosts() {
+  for (var i = 0; i < ghosts.length; i++) {
+    ghosts[i].moveProcess();
+  }
+}
 
-createPacMan();
+function draw() {
+  createRect(0, 0, gameCanvas.width, gameCanvas.height, wallInnerColor);
+  drawWalls();
+  drawFoods();
+  drawScore();
+  drawLives();
+  pacman.draw();
+  drawGhosts();
+}
+
+function update() {
+  draw();
+  pacman.moveProcess();
+  pacman.eat();
+  moveGhosts();
+  if (pacman.onGhostCollision(ghosts)) {
+    createNewPacMan();
+    createGhosts();
+    lives--;
+  }
+}
+
+function gameLoop() {
+  update();
+}
+
+createNewPacMan();
 createGhosts();
 gameLoop();
 
@@ -269,18 +259,14 @@ window.addEventListener("keydown", (event) => {
   let k = event.keyCode;
 
   setTimeout(() => {
-    if (k == 37 || k == 65) {
-      //left
-      pacman.nextDirection = DIRECTION_LEFT;
-    } else if (k == 38 || k == 87) {
-      //up
-      pacman.nextDirection = DIRECTION_UP;
-    } else if (k == 39 || k == 68) {
-      //right
-      pacman.nextDirection = DIRECTION_RIGHT;
-    } else if (k == 40 || k == 83) {
-      //bottom
+    if (k == 40) {
       pacman.nextDirection = DIRECTION_BOTTOM;
+    } else if (k == 39) {
+      pacman.nextDirection = DIRECTION_RIGHT;
+    } else if (k == 38) {
+      pacman.nextDirection = DIRECTION_UP;
+    } else if (k == 37) {
+      pacman.nextDirection = DIRECTION_LEFT;
     }
   }, 1);
 });

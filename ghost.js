@@ -1,73 +1,66 @@
 class Ghost {
-  constructor(x, y, width, height, speed, direction, color, range) {
+  constructor(x, y, width, height, direction, speed, color, range) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.speed = speed;
-    this.framecount = 7;
     this.direction = direction;
     this.nextDirection = this.direction;
     this.color = color;
+    this.speed = speed;
     this.range = range;
-    this.randomTargetIndex = parseInt(Math.random() * ghosts.length);
+    this.frames = 7;
+    this.randomTargetIndex = 1;
     this.target = randomTargets[this.randomTargetIndex];
+
     setInterval(() => {
-      this.changeRandomIndex();
+      this.changeRandomTargets();
     }, 10000);
   }
 
-  changeRandomIndex() {
+  changeRandomTargets() {
     this.randomTargetIndex += 1;
-
-    this.randomTargetIndex = this.randomTargetIndex % 4;
+    this.randomTargetIndex = this.randomTargetIndex % randomTargets.length;
   }
-  isInRangeWithPacman() {
-    let xDistance = Math.abs(pacman.getMapX() - this.getMapX());
-    let yDistance = Math.abs(pacman.getMapY() - this.getMapY());
+
+  isInRangeWithPackman() {
+    let xDifference = parseInt(pacman.getMapX() - this.getMapX());
+    let yDifference = parseInt(pacman.getMapY() - this.getMapY());
 
     if (
-      Math.sqrt(xDistance * xDistance + yDistance * yDistance) <= this.range
+      Math.sqrt(xDifference * xDifference + yDifference * yDifference) <=
+      this.range
     ) {
       return true;
     }
-
     return false;
   }
 
   moveProcess() {
-    if (this.isInRangeWithPacman()) {
+    if (this.isInRangeWithPackman()) {
       this.target = pacman;
     } else {
       this.target = randomTargets[this.randomTargetIndex];
     }
 
-    let tempDirection = this.direction;
-
     this.changeDirectionIfPossible();
+
     this.moveForwards();
 
     if (this.checkCollisions()) {
       this.moveBackwards();
-      this.direction = tempDirection;
+      return;
     }
-
-    this.draw();
   }
 
   changeDirectionIfPossible() {
     let tempDirection = this.direction;
 
-    this.direction = this.calculateNewDirection(
+    this.direction = this.calculateNextDirection(
       map,
       parseInt(this.target.x / gameCubeSize),
       parseInt(this.target.y / gameCubeSize),
     );
-
-    if (typeof this.direction == "undefined") {
-      this.direction = tempDirection;
-      return;
-    }
 
     if (
       this.getMapY() != this.getMapYRightSide() &&
@@ -75,6 +68,7 @@ class Ghost {
     ) {
       this.direction = DIRECTION_UP;
     }
+
     if (
       this.getMapX() != this.getMapXRightSide() &&
       this.direction == DIRECTION_UP
@@ -90,15 +84,7 @@ class Ghost {
     }
   }
 
-  draw() {
-    // gameContext.save();
-
-    createRect(this.x, this.y, gameCubeSize, gameCubeSize, this.color);
-
-    // gameContext.restore();
-  }
-
-  calculateNewDirection(map, destX, destY) {
+  calculateNextDirection(map, destX, destY) {
     let mp = [];
     for (var i = 0; i < map.length; i++) {
       mp[i] = map[i].slice();
@@ -108,31 +94,28 @@ class Ghost {
       {
         x: this.getMapX(),
         y: this.getMapY(),
-        rightX: this.getMapXRightSide(),
-        rightY: this.getMapYRightSide(),
         moves: [],
       },
     ];
+
     while (queue.length > 0) {
       let poped = queue.shift();
-
-      if (poped.x == destX && poped.y == destY) {
+      if (poped.y == destY && poped.x == destX) {
         return poped.moves[0];
       } else {
         mp[poped.y][poped.x] = 1;
+        let neighbourList = this.addNeighbours(mp, poped);
 
-        let neighbourLists = this.addNeighbours(mp, poped);
-        // console.log(neighbourLists)
-
-        for (var i = 0; i < neighbourLists.length; i++) {
-          queue.push(neighbourLists[i]);
+        for (var i = 0; i < neighbourList.length; i++) {
+          queue.push(neighbourList[i]);
         }
       }
     }
-    return DIRECTION_BOTTOM; //default move
+
+    return DIRECTION_UP;
   }
 
-  addNeighbours(mp, poped) {
+  addNeighbours = (mp, poped) => {
     let queue = [];
     let numberRows = mp.length;
     let numberColumns = mp[0].length;
@@ -178,16 +161,52 @@ class Ghost {
     }
 
     return queue;
-  }
-  eat() {
-    for (var i = 0; i < map.length; i++) {
-      for (var j = 0; j < map[0].length; j++) {
-        if (map[i][j] == 2 && this.getMapX() == j && this.getMapY() == i) {
-          map[i][j] = 3;
-          score++;
-        }
-      }
+  };
+
+  moveForwards() {
+    switch (this.direction) {
+      case DIRECTION_RIGHT:
+        this.x += this.speed;
+
+        break;
+
+      case DIRECTION_LEFT:
+        this.x -= this.speed;
+        break;
+
+      case DIRECTION_UP:
+        this.y -= this.speed;
+        break;
+
+      case DIRECTION_BOTTOM:
+        this.y += this.speed;
+        break;
     }
+  }
+
+  moveBackwards() {
+    switch (this.direction) {
+      case DIRECTION_RIGHT:
+        this.x -= this.speed;
+
+        break;
+
+      case DIRECTION_LEFT:
+        this.x += this.speed;
+        break;
+
+      case DIRECTION_UP:
+        this.y += this.speed;
+        break;
+
+      case DIRECTION_BOTTOM:
+        this.y -= this.speed;
+        break;
+    }
+  }
+
+  draw() {
+    createRect(this.x, this.y, this.width, this.height, this.color);
   }
 
   checkCollisions() {
@@ -202,58 +221,17 @@ class Ghost {
     return false;
   }
 
-  moveBackwards() {
-    switch (this.direction) {
-      case DIRECTION_UP:
-        this.y += this.speed;
-        break;
-
-      case DIRECTION_LEFT:
-        this.x += this.speed;
-        break;
-
-      case DIRECTION_RIGHT:
-        this.x -= this.speed;
-        break;
-
-      case DIRECTION_BOTTOM:
-        this.y -= this.speed;
-        break;
-    }
-  }
-
-  moveForwards() {
-    switch (this.direction) {
-      case DIRECTION_UP:
-        this.y -= this.speed;
-        break;
-
-      case DIRECTION_LEFT:
-        this.x -= this.speed;
-        break;
-
-      case DIRECTION_RIGHT:
-        this.x += this.speed;
-        break;
-
-      case DIRECTION_BOTTOM:
-        this.y += this.speed;
-        break;
-    }
-  }
-
   getMapX() {
     return parseInt(this.x / gameCubeSize);
   }
-
   getMapY() {
     return parseInt(this.y / gameCubeSize);
   }
-
   getMapXRightSide() {
-    return parseInt((this.x * 0.9999 + gameCubeSize) / gameCubeSize);
+    return parseInt((this.x + 0.9999 * gameCubeSize) / gameCubeSize);
   }
+
   getMapYRightSide() {
-    return parseInt((this.y * 0.9999 + gameCubeSize) / gameCubeSize);
+    return parseInt((this.y + 0.9999 * gameCubeSize) / gameCubeSize);
   }
 }
