@@ -1,15 +1,15 @@
 class PacMan {
-  constructor(x, y, width, height, direction, speed, color) {
+  constructor(x, y, width, height, color, direction, speed) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.color = color;
     this.direction = direction;
     this.nextDirection = this.direction;
-    this.color = color;
     this.speed = speed;
-    this.frames = 7;
     this.currentFrame = 1;
+    this.frameCount = 7;
 
     setInterval(() => {
       this.changeAnimation();
@@ -18,7 +18,7 @@ class PacMan {
 
   changeAnimation() {
     this.currentFrame =
-      this.currentFrame == this.frames ? 1 : (this.currentFrame += 1);
+      this.currentFrame == this.frameCount ? 1 : this.currentFrame + 1;
   }
 
   moveProcess() {
@@ -34,10 +34,12 @@ class PacMan {
 
   changeDirectionIfPossible() {
     if (this.direction == this.nextDirection) return;
+
     let tempDirection = this.direction;
 
     this.direction = this.nextDirection;
     this.moveForwards();
+
     if (this.checkCollisions()) {
       this.moveBackwards();
       this.direction = tempDirection;
@@ -46,24 +48,30 @@ class PacMan {
     }
   }
 
-  onGhostCollision(ghosts) {
-    for (var i = 0; i < ghosts.length; i++) {
-      let ghost = ghosts[i];
-      if (
-        ghost.getMapX() == this.getMapX() &&
-        ghost.getMapY() == this.getMapY()
-      ) {
-        return true;
-      }
+  moveBackwards() {
+    switch (this.direction) {
+      case DIRECTION_RIGHT:
+        this.x -= this.speed;
+        break;
+
+      case DIRECTION_LEFT:
+        this.x += this.speed;
+        break;
+
+      case DIRECTION_UP:
+        this.y += this.speed;
+        break;
+
+      case DIRECTION_BOTTOM:
+        this.y -= this.speed;
+        break;
     }
-    return false;
   }
 
   moveForwards() {
     switch (this.direction) {
       case DIRECTION_RIGHT:
         this.x += this.speed;
-
         break;
 
       case DIRECTION_LEFT:
@@ -76,33 +84,13 @@ class PacMan {
 
       case DIRECTION_BOTTOM:
         this.y += this.speed;
-        break;
-    }
-  }
-
-  moveBackwards() {
-    switch (this.direction) {
-      case DIRECTION_RIGHT:
-        this.x -= this.speed;
-
-        break;
-
-      case DIRECTION_LEFT:
-        this.x += this.speed;
-        break;
-
-      case DIRECTION_UP:
-        this.y += this.speed;
-        break;
-
-      case DIRECTION_BOTTOM:
-        this.y -= this.speed;
         break;
     }
   }
 
   draw() {
     gameContext.save();
+
     gameContext.translate(this.x + gameCubeSize / 2, this.y + gameCubeSize / 2);
     gameContext.rotate((this.direction * 90 * Math.PI) / 180);
     gameContext.translate(
@@ -111,11 +99,11 @@ class PacMan {
     );
 
     gameContext.drawImage(
-      pacManFrames,
+      pacmanFrames,
       (this.currentFrame - 1) * gameCubeSize,
       0,
-      this.width,
-      this.height,
+      gameCubeSize,
+      gameCubeSize,
       this.x,
       this.y,
       gameCubeSize,
@@ -128,13 +116,25 @@ class PacMan {
   eat() {
     for (var i = 0; i < map.length; i++) {
       for (var j = 0; j < map[0].length; j++) {
-        if (map[i][j] == 2 && j == this.getMapX() && this.getMapY() == i) {
-          //then this is food
+        if (map[i][j] == 2 && j == this.getMapX() && i == this.getMapY()) {
+          //then this is a food
           map[i][j] = 3;
           score++;
         }
       }
     }
+  }
+
+  checkGhostCollision(ghosts) {
+    for (var i = 0; i < ghosts.length; i++) {
+      if (
+        ghosts[i].getMapX() == this.getMapX() &&
+        ghosts[i].getMapY() == this.getMapY()
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   checkCollisions() {
@@ -155,6 +155,7 @@ class PacMan {
   getMapY() {
     return parseInt(this.y / gameCubeSize);
   }
+
   getMapXRightSide() {
     return parseInt((this.x + 0.9999 * gameCubeSize) / gameCubeSize);
   }

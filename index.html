@@ -1,14 +1,18 @@
-<!DOCTYPE html>
-<title></title>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacman Game</title>
+  </head>
+  <body style="margin: 0px; background-color: black; overflow: hidden">
+    <canvas width="500" height="500" id="game-canvas"></canvas>
+    <div style="display: none;">
+      <img id="pacman-frames" src="/assets/animations.gif" />
+    </div>
 
-<body style="margin: opx; overflow: hidden; background-color: black;">
-<canvas id="game-canvas" width="500" height="500"></canvas>
-<div style="display: none;">
-    <img src="/assets/animations.gif" id="main-pic" />
-</div>
-</body>
-<script type="text/javascript" src="ghost.js"></script>
-<script type="text/javascript" src="pacman.js"></script>
-<script type="text/javascript" src="game.js"></script>
-
+    <script type="text/javascript" src="ghost.js" ></script>
+    <script type="text/javascript" src="pacman.js" ></script>
+    <script type="text/javascript" src="game.js" ></script>
+  </body>
 </html>
