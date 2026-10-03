@@ -1,32 +1,34 @@
 let gameCanvas = document.getElementById("game-canvas"),
   gameContext = gameCanvas.getContext("2d"),
-  pacmanFrames = document.getElementById("pacman-frames");
+  pacmanFrames = document.getElementById("pacman-frames"),
+  ghostsFrames = document.getElementById("ghosts-frames");
 
 let map = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
-  [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1],
-  [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
-  [1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1],
-  [0, 0, 0, 0, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1],
-  [0, 0, 0, 0, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 0, 0, 0, 0],
-  [0, 0, 0, 0, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
-  [1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1],
-  [1, 1, 2, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 1],
-  [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
-  [1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-];
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+    [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
+    [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
+    [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+    [1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1],
+    [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
+    [1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1],
+    [1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1],
+    [1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1],
+    [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+    [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
+    [1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1],
+    [1, 1, 2, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 1],
+    [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
+    [1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1],
+    [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  ],
+  tempMap = map;
 
 //i == number rows or y axis of the game
 // j == number colums or x asis of the game
@@ -39,6 +41,7 @@ let fps = 30,
   wallInnerColor = "black",
   pacman,
   score = 0,
+  scoreCount = 0,
   lives = 3,
   pauseGame = false;
 
@@ -48,6 +51,33 @@ let DIRECTION_RIGHT = 4,
   DIRECTION_BOTTOM = 1;
 
 let ghostsColors = ["grey", "white", "purple", "red"];
+
+let ghostsLocations = [
+  {
+    x: 0,
+    y: 0,
+  },
+  {
+    x: 0,
+    y: 122,
+  },
+  {
+    x: 173,
+    y: 0,
+  },
+  {
+    x: 173,
+    y: 116,
+  },
+];
+
+for (var i = 0; i < map.length; i++) {
+  for (var j = 0; j < map[0].length; j++) {
+    if (map[i][j] == 2) {
+      scoreCount++;
+    }
+  }
+}
 
 let randomTargets = [
   {
@@ -133,7 +163,8 @@ function drawWalls() {
   }
 }
 
-function drawFoods() {
+function drawFoods(mapGame) {
+  map = mapGame ?? map;
   for (var i = 0; i < map.length; i++) {
     for (var j = 0; j < map[0].length; j++) {
       if (map[i][j] == 2) {
@@ -175,7 +206,7 @@ function createNewPacman() {
 
 function createGhosts() {
   ghosts = [];
-  for (var i = 0; i < ghostsColors.length; i++) {
+  for (var i = 0; i < ghostsLocations.length; i++) {
     ghosts.push(
       new Ghost(
         9 * gameCubeSize + (i % 2 == 0 ? 0 : 1) * gameCubeSize,
@@ -186,6 +217,10 @@ function createGhosts() {
         DIRECTION_UP,
         pacman.speed / 2,
         i + 6,
+        ghostsLocations[i].x,
+        ghostsLocations[i].y,
+        123,
+        116,
       ),
     );
   }
@@ -223,6 +258,41 @@ function moveGhosts() {
   });
 }
 
+function drawWonGame() {
+  gameContext.fillStyle = "white";
+  gameContext.font = "30px Emulogic";
+
+  gameContext.fillText(
+    "You Won!!",
+    9 * gameCubeSize + 1 * gameCubeSize,
+    10 * gameCubeSize + 1 * gameCubeSize,
+  );
+}
+
+function drawLostGame() {
+  gameContext.fillStyle = "white";
+  gameContext.font = "30px Emulogic";
+
+  gameContext.fillText(
+    "Game Over Pall!!",
+    9 * gameCubeSize + 1 * gameCubeSize,
+    10 * gameCubeSize + 1 * gameCubeSize,
+  );
+}
+
+function checkWonGame() {
+  if (score >= scoreCount) {
+    lives = 3;
+    drawFoods(tempMap);
+    createNewPacman();
+    createGhosts();
+    drawWonGame();
+    score = 0;
+
+    clearInterval(gameInterval);
+  }
+}
+
 function draw() {
   createRect(0, 0, gameCanvas.width, gameCanvas.height, wallInnerColor);
   drawWalls();
@@ -242,7 +312,17 @@ function update() {
     createNewPacman();
     createGhosts();
     lives--;
+    if (lives <= 0) {
+      drawFoods(tempMap);
+      createNewPacman();
+      createGhosts();
+      score = 0;
+      lives = 4;
+      drawLostGame();
+      clearInterval(gameInterval);
+    }
   }
+  checkWonGame();
 }
 
 function gameLoop() {
@@ -257,18 +337,18 @@ window.addEventListener("keydown", (event) => {
   let k = event.keyCode;
 
   setTimeout(() => {
-    if (k == 40) {
+    if (k == 40 || k == 83) {
       pacman.nextDirection = DIRECTION_BOTTOM;
 
       //direction bottom
-    } else if (k == 39) {
+    } else if (k == 39 || k == 68) {
       // direction right
       pacman.nextDirection = DIRECTION_RIGHT;
-    } else if (k == 38) {
+    } else if (k == 38 || k == 87) {
       //direction up
 
       pacman.nextDirection = DIRECTION_UP;
-    } else if (k == 37) {
+    } else if (k == 37 || k == 65) {
       // direction left
 
       pacman.nextDirection = DIRECTION_LEFT;

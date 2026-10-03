@@ -1,5 +1,18 @@
 class Ghost {
-  constructor(x, y, width, height, color, direction, speed, range) {
+  constructor(
+    x,
+    y,
+    width,
+    height,
+    color,
+    direction,
+    speed,
+    range,
+    imageX,
+    imageY,
+    imageWidth,
+    imageHeight,
+  ) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -8,6 +21,10 @@ class Ghost {
     this.direction = direction;
     this.nextDirection = this.direction;
     this.speed = speed;
+    this.imageX = imageX;
+    this.imageY = imageY;
+    this.imageWidth = imageWidth;
+    this.imageHeight = imageHeight;
     this.randomTargetIndex = 1;
     this.range = range;
     this.target = randomTargets[this.randomTargetIndex];
@@ -189,7 +206,19 @@ class Ghost {
   }
 
   draw() {
-    createRect(this.x, this.y, this.width, this.height, this.color);
+    gameContext.drawImage(
+      ghostsFrames,
+      this.imageX,
+      this.imageY,
+      this.imageWidth,
+      this.imageHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height,
+    );
+
+    // createRect(this.x, this.y, this.width, this.height, this.color);
   }
 
   checkCollisions() {
