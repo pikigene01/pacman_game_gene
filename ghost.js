@@ -218,6 +218,17 @@ class Ghost {
       this.height,
     );
 
+    gameContext.beginPath();
+    gameContext.strokeStyle = "red";
+    gameContext.arc(
+      this.x + gameCubeSize / 2,
+      this.y + gameCubeSize / 2,
+      this.range * gameCubeSize,
+      0,
+      2 * Math.PI,
+    );
+    gameContext.stroke();
+
     // createRect(this.x, this.y, this.width, this.height, this.color);
   }
 
