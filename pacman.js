@@ -1,5 +1,15 @@
 class PacMan {
-  constructor(x, y, width, height, color, direction, speed) {
+  constructor(
+    x,
+    y,
+    width,
+    height,
+    color,
+    direction,
+    speed,
+    imageWidth,
+    imageHeight,
+  ) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -10,6 +20,9 @@ class PacMan {
     this.speed = speed;
     this.currentFrame = 1;
     this.frameCount = 7;
+
+    this.imageWidth = imageWidth;
+    this.imageHeight = imageHeight;
 
     setInterval(() => {
       this.changeAnimation();
@@ -89,28 +102,40 @@ class PacMan {
   }
 
   draw() {
-    gameContext.save();
+    // gameContext.save();
 
-    gameContext.translate(this.x + gameCubeSize / 2, this.y + gameCubeSize / 2);
-    gameContext.rotate((this.direction * 90 * Math.PI) / 180);
-    gameContext.translate(
-      -this.x - gameCubeSize / 2,
-      -this.y - gameCubeSize / 2,
-    );
+    // gameContext.translate(this.x + gameCubeSize / 2, this.y + gameCubeSize / 2);
+    // gameContext.rotate((this.direction * 90 * Math.PI) / 180);
+    // gameContext.translate(
+    //   -this.x - gameCubeSize / 2,
+    //   -this.y - gameCubeSize / 2,
+    // );
+
+    // gameContext.drawImage(
+    //   pacmanFrames,
+    //   (this.currentFrame - 1) * gameCubeSize,
+    //   0,
+    //   gameCubeSize,
+    //   gameCubeSize,
+    //   this.x,
+    //   this.y,
+    //   gameCubeSize,
+    //   gameCubeSize,
+    // );
 
     gameContext.drawImage(
-      pacmanFrames,
-      (this.currentFrame - 1) * gameCubeSize,
-      0,
-      gameCubeSize,
-      gameCubeSize,
+      robberFrames,
+      231,
+      203,
+      this.imageWidth,
+      this.imageHeight,
       this.x,
       this.y,
       gameCubeSize,
       gameCubeSize,
     );
 
-    gameContext.restore();
+    // gameContext.restore();
   }
 
   eat() {

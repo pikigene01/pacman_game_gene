@@ -1,7 +1,10 @@
 let gameCanvas = document.getElementById("game-canvas"),
   gameContext = gameCanvas.getContext("2d"),
   pacmanFrames = document.getElementById("pacman-frames"),
-  ghostsFrames = document.getElementById("ghosts-frames");
+  ghostsFrames = document.getElementById("ghosts-frames"),
+  policeFrames = document.getElementById("police-frames"),
+  moneyFrames = document.getElementById("money-frames"),
+  robberFrames = document.getElementById("robber-frames");
 
 const tempMap = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -171,16 +174,27 @@ function drawFoods(mapGame) {
       if (map[i][j] == 2) {
         //then this is a food
         gameContext.drawImage(
-          pacmanFrames,
-          4 * gameCubeSize,
-          0,
-          gameCubeSize,
-          gameCubeSize,
+          moneyFrames,
+          383,
+          473,
+          303,
+          480,
           j * gameCubeSize + gameCubeSize / 3,
           i * gameCubeSize + gameCubeSize / 3,
           gameCubeSize / 3,
           gameCubeSize / 3,
         );
+        // gameContext.drawImage(
+        //   pacmanFrames,
+        //   4 * gameCubeSize,
+        //   0,
+        //   gameCubeSize,
+        //   gameCubeSize,
+        //   j * gameCubeSize + gameCubeSize / 3,
+        //   i * gameCubeSize + gameCubeSize / 3,
+        //   gameCubeSize / 3,
+        //   gameCubeSize / 3,
+        // );
       }
     }
   }
@@ -190,7 +204,8 @@ function drawScore() {
   gameContext.fillStyle = "white";
   gameContext.font = "30px Emulogic";
 
-  gameContext.fillText("Score: " + score, 0, (map.length + 1.3) * gameCubeSize);
+  // gameContext.fillText("Score: " + score, 0, (map.length + 1.3) * gameCubeSize);
+  gameContext.fillText("$" + score, 0, (map.length + 1.3) * gameCubeSize);
 }
 
 function createNewPacman() {
@@ -202,6 +217,8 @@ function createNewPacman() {
     "yellow",
     DIRECTION_RIGHT,
     gameCubeSize / 5,
+    746,
+    950,
   );
 }
 

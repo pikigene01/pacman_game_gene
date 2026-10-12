@@ -206,18 +206,37 @@ class Ghost {
   }
 
   draw() {
+    // gameContext.drawImage(
+    //   ghostsFrames,
+    //   this.imageX,
+    //   this.imageY,
+    //   this.imageWidth,
+    //   this.imageHeight,
+    //   this.x,
+    //   this.y,
+    //   this.width,
+    //   this.height,
+    // );
+    gameContext.save();
+    gameContext.translate(this.x + gameCubeSize / 2, this.y + gameCubeSize / 2);
+    gameContext.rotate((this.direction * 90 * Math.PI) / 180);
+    gameContext.translate(
+      -this.x - gameCubeSize / 2,
+      -this.y - gameCubeSize / 2,
+    );
     gameContext.drawImage(
-      ghostsFrames,
-      this.imageX,
-      this.imageY,
-      this.imageWidth,
-      this.imageHeight,
+      policeFrames,
+      231,
+      107,
+      1355,
+      732,
       this.x,
       this.y,
-      this.width,
-      this.height,
+      gameCubeSize,
+      gameCubeSize,
     );
 
+    gameContext.restore();
     // gameContext.beginPath();
     // gameContext.strokeStyle = "red";
     // gameContext.arc(
