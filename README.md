@@ -2,7 +2,7 @@ Cops vs Robbers Pac-Man
 
 A creative twist on the classic Pac-Man game! I transformed the original game into a Cops vs Robbers experience by changing the characters and collectibles to give the game a completely different theme.
 
-🎮 About the Game
+About the Game
 
 In this version of Pac-Man, you play as a robber trying to collect money while avoiding police cars chasing you through the maze.
 
@@ -16,13 +16,13 @@ Ghosts → Police Cars: The ghosts are now police cars chasing the robber.
 
 The goal is to collect money while avoiding the police and surviving for as long as possible.
 
-🎬 Watch the Gameplay
+Watch the Gameplay
 
 Check out the video to see the Cops vs Robbers Pac-Man game in action!
 
 Watch the YouTube Video
 
-💻 Getting the Source Code
+Getting the Source Code
 
 Clone this repository to explore the source code and available game assets.
 
@@ -34,7 +34,7 @@ cd pacman_game_gene
 
 Open the project using your preferred code editor and follow any project-specific instructions to run the game.
 
-🚀 Project Goals
+Project Goals
 
 Experiment with game development and programming.
 
@@ -44,7 +44,7 @@ Explore character changes, collectibles, and enemy designs.
 
 Share the project with other developers and gaming enthusiasts.
 
-👨‍💻 Creator
+Creator
 
 Created by Gene Piki — PikiPlaysYT.
 
@@ -52,7 +52,7 @@ YouTube: Watch my videos
 
 GitHub: pikigene01
 
-⭐ Support the Project
+Support the Project
 
 If you like this project:
 
